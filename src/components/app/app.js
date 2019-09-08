@@ -22,7 +22,11 @@ export default class App extends Component {
     deleteItem = (id) => {
         this.setState(({ todoData }) => {
             const idx = todoData.findIndex((el) => el.id === id);
-            const newArr = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
+            const newArr = [
+                ...todoData.slice(0, idx), 
+                ...todoData.slice(idx + 1)
+            ];
+
             return {
                 todoData: newArr
             }
@@ -30,21 +34,28 @@ export default class App extends Component {
         });
     }
 
-    addItem=(text) => {
-
+    addItem = (text) => {
         const newItem = { 
             label: text, 
             important: false, 
             id: this.maxId++
-        }
+        };
         this.setState(({ todoData }) => {
             const newArr = [...todoData, newItem];
             return {
                 todoData: newArr
             }
-        })
-        console.log('add ', text);
+        });
     }
+
+    onToggleImportant = (id) => {
+        console.log( 'Toggle Important', id);
+    };
+
+    onToggleDone = (id) => {
+        console.log( 'Toggle Done', id);
+
+    };
 
     render(){
         return (
@@ -56,10 +67,13 @@ export default class App extends Component {
             </div>
 
             <TodoList 
-            todos={this.state.todoData} 
-            onDeleted={this.deleteItem}/>
+                todos={this.state.todoData} 
+                onDeleted={this.deleteItem}
+                onToggleImportant={this.onToggleImportant}
+                onToggleDone={this.onToggleDone}
+            />
             <ItemAddForm
-            onAdd={this.addItem}/>
+                onItemAdded={this.addItem}/>
             </div>
         );
     }
