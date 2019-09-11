@@ -13,6 +13,9 @@ export default class App extends Component {
 
     state={
         searchString: '',
+        viewAllState: true,
+        viewActiveState: false,
+        viewDoneState: false,
         todoData: [
             this.createTodoItem('Drink Coffee'),
             this.createTodoItem('Make Awesome App'),
@@ -81,13 +84,7 @@ export default class App extends Component {
             };
         })
     };
-    // onSearch = (e) => {
-    //     // this.setState(({ searchString }) => {
-    //     //     return {
-    //     //         searchString:  todoData.filter((el) => el.label.indexOf(text) !== -1)
-    //     //     };
-    //     // })
-    // }
+    
     onSearch = (e) => {
         const text = e.target.value;
         this.setState(({ searchString }) => {
@@ -96,11 +93,49 @@ export default class App extends Component {
             };
         })
     }
+
+    viewAll = () => {
+        this.setState(({ searchString }) => {
+            return {
+                viewAllState: true,
+                viewActiveState: false,
+                viewDoneState: false,
+            };
+        })
+    };
+
+    viewActive = () => {
+        this.setState(({ searchString }) => {
+            return {
+                viewAllState: false,
+                viewActiveState: true,
+                viewDoneState: false,
+            };
+        })
+    };
+
+    viewDone = () => {
+        this.setState(({ searchString }) => {
+            return {
+                viewAllState: false,
+                viewActiveState: false,
+                viewDoneState: true,
+            };
+        })
+    };
+
     render(){
 
         const {todoData, searchString } = this.state;
         const doneCount = todoData.filter((el) => el.done).length;
         const todoCount = todoData.length - doneCount;
+        let filteredData = todoData.filter((el) => el.label.toLowerCase().indexOf(searchString.toLowerCase()) !== -1);
+        if(this.state.viewDoneState){
+            filteredData = filteredData.filter((el) => el.done === true);
+        }
+        if(this.state.viewActiveState){
+            filteredData = filteredData.filter((el) => el.done === false);
+        }
 
         return (
             <div className="todo-app">
@@ -109,11 +144,18 @@ export default class App extends Component {
                 <SearchPanel 
                     onSearch={this.onSearch}
                 />
-                <ItemStatusFilter />
+                <ItemStatusFilter 
+                    viewAllState={this.state.viewAllState}
+                    viewActiveState={this.state.viewActiveState}
+                    viewDoneState={this.state.viewDoneState}
+                    viewAll={this.viewAll}
+                    viewActive={this.viewActive}
+                    viewDone={this.viewDone}
+                />
             </div>
 
             <TodoList 
-                todos={todoData.filter((el) => el.label.toLowerCase().indexOf(searchString.toLowerCase()) !== -1)} 
+                todos={filteredData} 
                 onDeleted={this.deleteItem}
                 onToggleImportant={this.onToggleImportant}
                 onToggleDone={this.onToggleDone}
